@@ -77,37 +77,4 @@ resource "random_string" "this" {
   upper   = false
 }
 
-locals {
-  name         = "${var.project}-${var.slug_version}-${var.env}-${var.s3_purpose}-${local.aws_region}-${random_string.this.result}"
-  replica_name = "${var.project}-${var.slug_version}-${var.env}-${var.s3_purpose}-replica-${var.s3_replica_region}-${random_string.this.result}"
-  aws_region   = var.region
 
-  replication_configuration = var.s3_with_replication ? {
-    role = aws_iam_role.replication[0].arn
-
-    rules = [
-      {
-        id       = "everything-without-filter"
-        status   = "Enabled"
-        priority = 30
-
-        delete_marker_replication = true
-
-        # filter = {
-        #   prefix = "/"
-        # }
-
-        destination = {
-          bucket        = "arn:aws:s3:::${local.replica_name}"
-          storage_class = "STANDARD"
-        }
-
-        // leads to MalformedXML error
-        // existing_object_replication = true
-      },
-    ]
-    } : {
-    role  = ""
-    rules = []
-  }
-}
