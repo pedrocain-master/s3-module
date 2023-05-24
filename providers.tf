@@ -33,7 +33,6 @@ terraform {
   }
 
   // configure backend.tf accordingly
-  backend "s3" {}
 
   required_version = ">= 1.4.0"
 }
