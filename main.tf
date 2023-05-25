@@ -28,9 +28,30 @@ locals {
       },
     ]
     } : {
-    role  = ""
-    rules = []
-  }
+    role = aws_iam_role.replication[0].arn
+
+    rules = [
+      {
+        id       = "everything-without-filter"
+        status   = "Disabled"
+        priority = 30
+
+        delete_marker_replication = true
+
+        # filter = {
+        #   prefix = "/"
+        # }
+
+        destination = {
+          bucket        = "arn:aws:s3:::${local.replica_name}"
+          storage_class = "STANDARD"
+        }
+
+        // leads to MalformedXML error
+        // existing_object_replication = true
+      },
+    ]
+    }
 }
 
 data "aws_caller_identity" "current" {}
